@@ -1,0 +1,70 @@
+resources:
+- repo: self
+  clean: true
+queue:
+  name: Hosted VS2017
+  demands: 
+  - msbuild
+  - visualstudio
+  - vstest
+
+variables:
+  BuildPlatform: 'any cpu'
+  BuildConfiguration: 'release'
+steps:
+- task: VSBuild@1
+  displayName: Restore
+  inputs:
+    msbuildArgs: '/t:Restore'
+
+    platform: '$(BuildPlatform)'
+
+    configuration: '$(BuildConfiguration)'
+
+    clean: true
+
+
+- task: VSBuild@1
+  displayName: 'Build solution **\*.sln'
+  inputs:
+    msbuildArgs: '/t:Build'
+
+    platform: '$(BuildPlatform)'
+
+    configuration: '$(BuildConfiguration)'
+
+    clean: true
+
+
+- task: VSTest@2
+  displayName: Test
+  inputs:
+    testAssemblyVer2: |
+     **\*test*.dll
+     !**\*IntegrationTests.dll
+     !**\*TestAdapter.dll
+     !**\obj\**
+
+    testFiltercriteria: 'Category!=Integration'
+
+    runInParallel: true
+
+    codeCoverageEnabled: true
+
+
+- task: VSBuild@1
+  displayName: Package
+  inputs:
+    solution: FakeHttpMessageHandler/FakeHttpMessageHandler.csproj
+
+    msbuildArgs: '/t:Pack /p:PackageVersion=$(Build.BuildNumber) /p:OutputPath=$(Build.ArtifactStagingDirectory)'
+
+    platform: '$(BuildPlatform)'
+
+    configuration: '$(BuildConfiguration)'
+
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
+
