@@ -15,29 +15,75 @@ namespace FakeHttpMessageHandler
     public class FakeHttpMessageHandler<T> : HttpMessageHandler where T : class
     {
         private readonly T _overrideResponseContent;
+        private readonly Func<T> _createResponseObjectFunction;
+        private readonly Func<Task<T>> _createResponseObjectAsyncFunction;
+        private readonly Func<T, string> _serializerFunction;
 
-        public FakeHttpMessageHandler(T overrideResponseContent = null)
+
+        /// <summary>
+        /// FakeHttpMessageHandler seamlessly fakes http request sent from System.Net.Http.HttpClient for purpose of unit testing code that previously could only be integration tested.
+        /// Passing <paramref name="overrideResponseContent"/> will override response of a message handler to JSON serialized representation of <paramref name="overrideResponseContent"/>
+        /// </summary>
+        /// <param name="overrideResponseContent"></param>
+        /// <param name="serializerFunction"></param>
+        public FakeHttpMessageHandler(T overrideResponseContent = null, Func<T, string> serializerFunction = null)
         {
             _overrideResponseContent = overrideResponseContent;
+            _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output)); 
+        }
+
+        /// <summary>
+        /// FakeHttpMessageHandler seamlessly fakes http request sent from System.Net.Http.HttpClient for purpose of unit testing code that previously could only be integration tested.
+        /// <paramref name="createResponseObjectFunction"/> will be called to generate response object, and response message handler will return a JSON representation of the object that was created by <paramref name="createResponseObjectFunction"/>
+        /// </summary>
+        /// <param name="createResponseObjectFunction"></param>
+        /// <param name="serializerFunction"></param>
+        public FakeHttpMessageHandler(Func<T> createResponseObjectFunction, Func<T, string> serializerFunction = null)
+        {
+            _createResponseObjectFunction = createResponseObjectFunction ?? throw new ArgumentNullException(nameof(createResponseObjectFunction));
+            _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output));
+        }
+
+        /// <summary>
+        /// FakeHttpMessageHandler seamlessly fakes http request sent from System.Net.Http.HttpClient for purpose of unit testing code that previously could only be integration tested.
+        /// <paramref name="createResponseObjectAsyncFunction"/> will be called to generate response object, and response message handler will return a JSON representation of the object that was created by <paramref name="createResponseObjectAsyncFunction"/>
+        /// </summary>
+        /// <param name="createResponseObjectAsyncFunction"></param>
+        /// <param name="serializerFunction"></param>
+        public FakeHttpMessageHandler(Func<Task<T>> createResponseObjectAsyncFunction, Func<T, string> serializerFunction = null)
+        {
+            _createResponseObjectAsyncFunction = createResponseObjectAsyncFunction ?? throw new ArgumentNullException(nameof(createResponseObjectAsyncFunction));
+            _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output));
         }
 
         /// <summary>
         /// Count of calls made
         /// </summary>
         public int CallsCount { get; private set; }
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             CallsCount++;
 
             T returnObject = null;
-            returnObject = _overrideResponseContent ?? Activator.CreateInstance<T>();
-            var returnObjectString = returnObject is string ? returnObject as string : JsonConvert.SerializeObject(returnObject);
+            if (_createResponseObjectFunction != null)
+            {
+                returnObject = _createResponseObjectFunction();
+            }
+            else if(_createResponseObjectAsyncFunction != null)
+            {
+                returnObject = await _createResponseObjectAsyncFunction();
+            }
+            else
+            {
+                returnObject = _overrideResponseContent ?? Activator.CreateInstance<T>();
+            }
+            var returnObjectString = returnObject is string ? returnObject as string : _serializerFunction(returnObject);
             HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new ByteArrayContent(Encoding.ASCII.GetBytes(returnObjectString))
             };
 
-            return Task.FromResult(responseMessage);
+            return responseMessage;
         }
 
         /// <summary>
