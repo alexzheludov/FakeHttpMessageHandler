@@ -5,7 +5,14 @@ VisualStudioVersion = 16.0.28407.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeHttpMessageHandler", "FakeHttpMessageHandler\FakeHttpMessageHandler.csproj", "{A7AE5262-9DC2-45C4-964D-34C5E63ED041}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeHttpMessageHandler.Tests", "FakeHttpMessageHandler.Tests\FakeHttpMessageHandler.Tests.csproj", "{E0337326-3F10-41F5-B8A9-61E6FDBDC11D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeHttpMessageHandler.Tests", "FakeHttpMessageHandler.Tests\FakeHttpMessageHandler.Tests.csproj", "{E0337326-3F10-41F5-B8A9-61E6FDBDC11D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97A6D529-5AD5-4A76-B8F3-644AB6C5180D}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

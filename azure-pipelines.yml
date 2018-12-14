@@ -1,3 +1,5 @@
+name: "FakeHttpMessageHandler - CI"
+
 resources:
 - repo: self
   clean: true
