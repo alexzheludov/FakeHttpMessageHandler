@@ -7,7 +7,7 @@ FakeHttpMessageHandler seamlessly fakes http request sent from System.Net.Http.H
 ## Examples
 
 If FakeHttpMessageHandler is initialized with no parameters, it will create an instance of T, serialize it as JSON and return it in a content of HttpResponse.
-```
+```csharp
 using(var httpMessageHandler = new FakeHttpMessageHandler<OutputType>())
 using(var httpClient = new HttpClient(httpMessageHandler))
 {
@@ -18,7 +18,7 @@ using(var httpClient = new HttpClient(httpMessageHandler))
 You may also choose to override returned object by either passing an instance of returned object to a constructor or a function that will retrieve it. In both cases an object will be serialized into JSON unless serializer is overwritten or T is string;
 
 
-```
+```csharp
 // Passing an instance of output object
 var output = new OutputType();
 using(var httpMessageHandler = new FakeHttpMessageHandler<OutputType>(output))
@@ -51,7 +51,7 @@ using (var httpClient = new HttpClient(httpMessageHandler))
 ```
 
 Additionally you can override serializer function that is called to serilize response content.
-```
+```csharp
 var responseString = "zheludov.com";
 var serializerMock = new Mock<ISerializer>();
 var responseObjectRetrieverMock = new Mock<IResponceObjectRetriever>();
@@ -69,7 +69,7 @@ using (var httpClient = new HttpClient(httpMessageHandler))
 ### Sample Class and Unit Test
 
 #### ApiClient.cs
-```
+```csharp
 public class ApiClient : IDisposable
 {
     private readonly HttpMessageHandler _httpMessageHandler;
@@ -99,8 +99,8 @@ public class ApiClient : IDisposable
 ```
 
 #### ApiClientTest.cs
-```
- [TestClass]
+```csharp
+[TestClass]
 public class ApiClientTest
 {
     [TestMethod]
