@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>FakeHttpMessageHandler seamlessly fakes http request sent from System.Net.Http.HttpClient for purpose of unit testing code that previously could only be integration tested.</Description>
+    <PackageProjectUrl>https://github.com/alexzheludov/FakeHttpMessageHandler</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/alexzheludov/FakeHttpMessageHandler/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/alexzheludov/FakeHttpMessageHandler</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>httpclient unittest unit testing test http client http message handler fake xunit web api url rest</PackageTags>
+    <Copyright>Copyright ©2018 Zheludov</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
