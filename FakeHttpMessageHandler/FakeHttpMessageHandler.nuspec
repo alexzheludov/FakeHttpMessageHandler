@@ -20,7 +20,7 @@
     <projectUrl>https://github.com/alexzheludov/FakeHttpMessageHandler</projectUrl>
 
     <!-- License information is displayed on the gallery -->
-    <license type="expression">Apache-2.0</license>
+    <!--<license type="expression">Apache-2.0</license>-->
 
 
     <!-- The icon is used in Visual Studio's package manager UI -->
@@ -30,7 +30,7 @@
             If true, this value prompts the user to accept the license when
             installing the package. 
         -->
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!--<requireLicenseAcceptance>false</requireLicenseAcceptance>-->
 
     <!-- Any details about this particular release -->
     <!--<releaseNotes>Bug fixes and performance improvements</releaseNotes>-->
