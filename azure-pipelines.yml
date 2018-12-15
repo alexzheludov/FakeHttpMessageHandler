@@ -54,16 +54,25 @@ steps:
     codeCoverageEnabled: true
 
 
-- task: VSBuild@1
-  displayName: Package
+#- task: VSBuild@1
+#  displayName: Package
+#  inputs:
+#    solution: FakeHttpMessageHandler/FakeHttpMessageHandler.csproj
+
+#    msbuildArgs: '/t:Pack /p:PackageVersion=$(Build.BuildNumber) /p:OutputPath=$(Build.ArtifactStagingDirectory)'
+
+#    platform: '$(BuildPlatform)'
+
+#    configuration: '$(BuildConfiguration)'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet pack'
   inputs:
-    solution: FakeHttpMessageHandler/FakeHttpMessageHandler.csproj
+    command: pack
 
-    msbuildArgs: '/t:Pack /p:PackageVersion=$(Build.BuildNumber) /p:OutputPath=$(Build.ArtifactStagingDirectory)'
+    packagesToPack: FakeHttpMessageHandler/FakeHttpMessageHandler.csproj
 
-    platform: '$(BuildPlatform)'
-
-    configuration: '$(BuildConfiguration)'
+    versioningScheme: byBuildNumber
 
 
 - task: PublishBuildArtifacts@1
