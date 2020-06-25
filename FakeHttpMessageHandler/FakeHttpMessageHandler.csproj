@@ -10,7 +10,15 @@
     <PackageTags>httpclient unittest unit testing test http client http message handler fake xunit web api url rest</PackageTags>
     <Copyright>Copyright ©2018 Zheludov</Copyright>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="4.0.0">
