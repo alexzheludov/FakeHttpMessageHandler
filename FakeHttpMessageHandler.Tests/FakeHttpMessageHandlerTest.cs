@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ namespace FakeHttpMessageHandler.Tests
                 var responseText = await responce.Content.ReadAsStringAsync();
                 var clientOutput = JsonConvert.DeserializeObject<FakeOutput>(responseText);
 
+                responce.StatusCode.Should().Be(HttpStatusCode.OK);
                 clientOutput.Should().NotBeNull();
                 clientOutput.FakeProperty.Should().NotBeNullOrWhiteSpace();
                 handler.CallsCount.Should().Be(1);
@@ -52,6 +54,26 @@ namespace FakeHttpMessageHandler.Tests
                 clientOutput.Should().NotBeNull();
                 clientOutput.Should().BeEquivalentTo(output);
                 clientOutput.FakeProperty.Should().NotBeNullOrWhiteSpace();
+                handler.CallsCount.Should().Be(1);
+            }
+        }
+
+        [TestMethod]
+        public async Task FakeHttpMessageHandler_Verify_ReturnStatusCodeOverride()
+        {
+            var output = new FakeOutput
+            {
+                FakeProperty = "MyFakeProperty"
+            };
+
+            var handler = new FakeHttpMessageHandler<FakeOutput>(output, httpStatusCode: HttpStatusCode.BadRequest);
+
+
+            using (var httpClient = new HttpClient(handler, true))
+            {
+                var responce = await httpClient.GetAsync(_requestUri);
+                responce.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+                
                 handler.CallsCount.Should().Be(1);
             }
         }
