@@ -18,7 +18,7 @@ namespace FakeHttpMessageHandler
         private readonly Func<T> _createResponseObjectFunction;
         private readonly Func<Task<T>> _createResponseObjectAsyncFunction;
         private readonly Func<T, string> _serializerFunction;
-
+        private readonly HttpStatusCode _httpStatusCode;
 
         /// <summary>
         /// FakeHttpMessageHandler seamlessly fakes http request sent from System.Net.Http.HttpClient for purpose of unit testing code that previously could only be integration tested.
@@ -26,10 +26,12 @@ namespace FakeHttpMessageHandler
         /// </summary>
         /// <param name="overrideResponseContent"></param>
         /// <param name="serializerFunction"></param>
-        public FakeHttpMessageHandler(T overrideResponseContent = null, Func<T, string> serializerFunction = null)
+        /// <param name="httpStatusCode"></param>
+        public FakeHttpMessageHandler(T overrideResponseContent = null, Func<T, string> serializerFunction = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
             _overrideResponseContent = overrideResponseContent;
-            _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output)); 
+            _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output));
+            _httpStatusCode = httpStatusCode;
         }
 
         /// <summary>
@@ -38,10 +40,12 @@ namespace FakeHttpMessageHandler
         /// </summary>
         /// <param name="createResponseObjectFunction"></param>
         /// <param name="serializerFunction"></param>
-        public FakeHttpMessageHandler(Func<T> createResponseObjectFunction, Func<T, string> serializerFunction = null)
+        /// <param name="httpStatusCode"></param>
+        public FakeHttpMessageHandler(Func<T> createResponseObjectFunction, Func<T, string> serializerFunction = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
             _createResponseObjectFunction = createResponseObjectFunction ?? throw new ArgumentNullException(nameof(createResponseObjectFunction));
             _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output));
+            _httpStatusCode = httpStatusCode;
         }
 
         /// <summary>
@@ -50,10 +54,12 @@ namespace FakeHttpMessageHandler
         /// </summary>
         /// <param name="createResponseObjectAsyncFunction"></param>
         /// <param name="serializerFunction"></param>
-        public FakeHttpMessageHandler(Func<Task<T>> createResponseObjectAsyncFunction, Func<T, string> serializerFunction = null)
+        /// <param name="httpStatusCode"></param>
+        public FakeHttpMessageHandler(Func<Task<T>> createResponseObjectAsyncFunction, Func<T, string> serializerFunction = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
         {
             _createResponseObjectAsyncFunction = createResponseObjectAsyncFunction ?? throw new ArgumentNullException(nameof(createResponseObjectAsyncFunction));
             _serializerFunction = serializerFunction ?? new Func<T, string>((T output) => JsonConvert.SerializeObject(output));
+            _httpStatusCode = httpStatusCode;
         }
 
         /// <summary>
@@ -78,7 +84,7 @@ namespace FakeHttpMessageHandler
                 returnObject = _overrideResponseContent ?? Activator.CreateInstance<T>();
             }
             var returnObjectString = returnObject is string ? returnObject as string : _serializerFunction(returnObject);
-            HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            HttpResponseMessage responseMessage = new HttpResponseMessage(_httpStatusCode)
             {
                 Content = new ByteArrayContent(Encoding.ASCII.GetBytes(returnObjectString))
             };
